@@ -1,0 +1,15 @@
+print("Olá mundo")
+print("Outra mensagem")
+print("Soma: ", 2 + 2) # texto é string
+print("Subtração: ", 2 - 2)
+print("Multiplicação: ", 2 * 2)
+print("Divisão: ", 2 / 2)
+print("Resto da divisão: ", 2 % 2)
+
+print("     *")
+print("    ***")
+print("   *****")
+print("  *******")
+print(" *********\n\n")
+print("    ***")
+print("    ***")
