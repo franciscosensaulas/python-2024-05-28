@@ -1,84 +1,24 @@
-import mysql.connector
+import os
 
-def conectar():
-    # Criando a conexão com o servidor do mysql
-    conexao = mysql.connector.connect(
-        host="127.0.0.1", # localhost ou 127.0.0.1 é a tua máquina
-        port=3306,
-        user="root",
-        password="admin",
-    )
-    return conexao
+from database_operacoes import apagar_registro_tabela_categorias, consultar_registros_tabela_categorias, consultar_registros_tabela_clientes, consultar_registros_tabela_marcas, criar_banco_dados, criar_tabela_categorias, criar_tabela_clientes, criar_tabela_marcas, inserir_registro_tabela_categorias, inserir_registro_tabela_clientes, inserir_registro_tabela_marcas
 
 
-def criar_banco_dados():
-    print("Criando banco de dados loja_db")
-    conexao = conectar()
-    # Criando cursor que permitirá executar comandos no mysql
-    cursor = conexao.cursor()
-    cursor.execute("DROP DATABASE IF EXISTS loja_db")
-    cursor.execute("CREATE DATABASE loja_db")
-    conexao.commit()
-    conexao.close()
-    # SHOW SCHEMAS;
-    print("Banco de dados criado com sucesso")
-
-
-def definir_banco_dados(cursor):
-    # print("Definindo banco dados loja_db")
-    cursor.execute("USE loja_db")
-    # print("Definido banco dados")
-    return cursor
-
-    
-def criar_tabela_categorias():
-    print("Criando tabela categorias")
-    conexao = conectar()
-    # Criando cursor que permitirá executar comandos no mysql
-    cursor = conexao.cursor()
-    cursor = definir_banco_dados(cursor) # definir o banco de dados que será utilizado, ou seja, USE loja_db
-    cursor.execute("""
-                    CREATE TABLE categorias (
-                        id INT PRIMARY KEY AUTO_INCREMENT, 
-                        nome VARCHAR(100) NOT  NULL
-                    )
-                   """)
-    conexao.commit()
-    conexao.close()
-    print("Criado tabela categorias")
-
-
-def inserir_registro_tabela_categorias():
-    print("Criando registro na tabela de categorias")
-    conexao = conectar()
-    # Criando cursor que permitirá executar comandos no mysql
-    cursor = conexao.cursor()
-    cursor = definir_banco_dados(cursor) # definir o banco de dados que será utilizado, ou seja, USE loja_db
-    cursor.execute("INSERT INTO categorias (nome) VALUES ('Hatch');")
-    conexao.commit()
-    conexao.close()
-    # SELECT id, nome FROM categorias;
-    print("Registro criado com sucesso")
-    
-
-def consultar_registros_tabela_categorias():
-    print("Consultando registros da tabela de categorias")
-    conexao = conectar()
-    # Criando cursor que permitirá executar comandos no mysql
-    cursor = conexao.cursor()
-    cursor = definir_banco_dados(cursor) # definir o banco de dados que será utilizado, ou seja, USE loja_db
-    cursor.execute("SELECT id, nome FROM categorias")
-    # Executar a consulta do SELECT buscando todas as categorias
-    registros = cursor.fetchall()
-    # Percorrendo cada um dos registros para apresentar para o usuário
-    for registro in registros:
-        print(registro)
-
-
+os.system("cls")
 criar_banco_dados()
 criar_tabela_categorias()
-inserir_registro_tabela_categorias()    
+inserir_registro_tabela_categorias("Hatch")   
+inserir_registro_tabela_categorias("Sedan") 
+apagar_registro_tabela_categorias(1)
 consultar_registros_tabela_categorias()
+
+criar_tabela_marcas()
+inserir_registro_tabela_marcas("Fiat", "SC - Blumenau - Rua São Paulo - 1740")
+
+criar_tabela_clientes()
+inserir_registro_tabela_clientes("John Doe", "920.192.381-20")
+
+consultar_registros_tabela_marcas()
+consultar_registros_tabela_clientes()
 # Ex. Criar um def para criar a tabela de marcas
 #       Marcas deve conter os seguintes campos:
 #           - id
