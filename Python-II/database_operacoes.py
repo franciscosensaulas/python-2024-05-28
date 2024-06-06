@@ -73,9 +73,19 @@ def consultar_registros_tabela_categorias():
     # Executar a consulta do SELECT buscando todas as categorias
     registros = cursor.fetchall()
     conexao.close()
-    # Percorrendo cada um dos registros para apresentar para o usuário
+    # criar a lista de categorias vazia
+    categorias = []
+    # percorrer cada um dos registros do banco de dados
     for registro in registros:
-        print(registro)
+        # gerar o dicionário (chave, valor) com os dados do registro
+        categoria = {
+            "id": registro[0],
+            "nome": registro[1]
+        }
+        # adicionar o dicionário(dados da categoria) na lista de categorias
+        categorias.append(categoria)
+    # a lista de categorias (que contém uma lista de dicionários com os dados das categorias)
+    return categorias
 
 
 def criar_tabela_marcas():
