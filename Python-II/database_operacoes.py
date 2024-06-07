@@ -11,17 +11,79 @@ def conectar():
     return conexao
 
 
-def criar_banco_dados():
-    print("Criando banco de dados loja_db")
+def setup():
+    # apagar_banco_dados()
+    if verificar_banco_dados_existe() == False:
+        criar_banco_dados()
+        criar_tabelas()
+        popular_registros()
+
+
+def criar_tabelas():
+    criar_tabela_categorias()
+    criar_tabela_clientes()
+    criar_tabela_marcas()
+
+
+def popular_registros():
+    popular_registros_tabela_categorias()
+    popular_registros_tabela_clientes()
+    popular_registros_tabela_marcas()
+
+
+def popular_registros_tabela_categorias():
+    inserir_registro_tabela_categorias("Hatch")
+    inserir_registro_tabela_categorias("Sedan")
+    inserir_registro_tabela_categorias("Pickup")
+    inserir_registro_tabela_categorias("SUV")
+
+def popular_registros_tabela_clientes():
+    pass
+
+
+def popular_registros_tabela_marcas():
+    pass
+
+
+def verificar_banco_dados_existe() -> bool:
     conexao = conectar()
     # Criando cursor que permitirá executar comandos no mysql
     cursor = conexao.cursor()
-    cursor.execute("DROP DATABASE IF EXISTS loja_db")
+    # Consultar na tabela onde contém os dados dos bancos dados, verificando se existe o banco de dados
+    # com o nome loja_db
+    cursor.execute("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'loja_db'")
+    # Obter um registro da consulta
+    resultado = cursor.fetchone()
+    # Verificar que a consulta retornou um registro, ou seja, o banco de dados existe com o nome 'loja_db'
+    if resultado is not None:
+        # Desta forma, retornando true, pois o banco de dados existe
+        return True
+    else:
+        return False
+
+
+def criar_banco_dados():
+    # print("Criando banco de dados loja_db")
+    conexao = conectar()
+    # Criando cursor que permitirá executar comandos no mysql
+    cursor = conexao.cursor()
     cursor.execute("CREATE DATABASE loja_db")
     conexao.commit()
     conexao.close()
     # SHOW SCHEMAS;
-    print("Banco de dados criado com sucesso")
+    # print("Banco de dados criado com sucesso")
+
+
+def apagar_banco_dados():
+    # print("Criando banco de dados loja_db")
+    conexao = conectar()
+    # Criando cursor que permitirá executar comandos no mysql
+    cursor = conexao.cursor()
+    cursor.execute("DROP DATABASE IF EXISTS loja_db")
+    conexao.commit()
+    conexao.close()
+    # SHOW SCHEMAS;
+    # print("Banco de dados criado com sucesso")
 
 
 def definir_banco_dados(cursor):
@@ -32,7 +94,7 @@ def definir_banco_dados(cursor):
 
     
 def criar_tabela_categorias():
-    print("Criando tabela categorias")
+    # print("Criando tabela categorias")
     conexao = conectar()
     # Criando cursor que permitirá executar comandos no mysql
     cursor = conexao.cursor()
@@ -45,11 +107,11 @@ def criar_tabela_categorias():
                    """)
     conexao.commit()
     conexao.close()
-    print("Criado tabela categorias")
+    # print("Criado tabela categorias")
 
 
 def inserir_registro_tabela_categorias(nome):
-    print("Criando registro na tabela de categorias")
+    # print("Criando registro na tabela de categorias")
     conexao = conectar()
     # Criando cursor que permitirá executar comandos no mysql
     cursor = conexao.cursor()
@@ -60,11 +122,11 @@ def inserir_registro_tabela_categorias(nome):
     conexao.commit()
     conexao.close()
     # SELECT id, nome FROM categorias;
-    print("Registro criado com sucesso")
+    # print("Registro criado com sucesso")
 
 
 def consultar_registros_tabela_categorias():
-    print("Consultando registros da tabela de categorias")
+    # print("Consultando registros da tabela de categorias")
     conexao = conectar()
     # Criando cursor que permitirá executar comandos no mysql
     cursor = conexao.cursor()
@@ -88,8 +150,22 @@ def consultar_registros_tabela_categorias():
     return categorias
 
 
+def alterar_registro_tabela_categorias(id: int, nome: str):
+    # Abre a conexão com o banco de dados
+    conexao = conectar()
+    cursor = conexao.cursor()
+    # Defini o banco de dados
+    cursor = definir_banco_dados(cursor)
+    # Definir a query que será executada
+    cursor.execute("UPDATE categorias SET nome = %s WHERE id = %s", (nome, id))
+    # Efetivar a atualização na base de dados
+    conexao.commit()
+    # Fechar conexão com a base de dados
+    conexao.close()
+
+
 def criar_tabela_marcas():
-    print("Criando tabela marcas")
+    # print("Criando tabela marcas")
     conexao = conectar()
     cursor = conexao.cursor()
     cursor = definir_banco_dados(cursor)
@@ -102,33 +178,31 @@ def criar_tabela_marcas():
                    """)
     conexao.commit()
     conexao.close()
-    print("Criado tabela marcas")
+    # print("Criado tabela marcas")
     
 def inserir_registro_tabela_marcas(nome: str, endereco: str):
-    print("Criando registro na tabela de marcas")
+    # print("Criando registro na tabela de marcas")
     conexao = conectar()
     cursor = conexao.cursor()
     cursor = definir_banco_dados(cursor)
     cursor.execute("INSERT INTO marcas (nome, endereco) VALUES (%s, %s)", (nome, endereco))
     conexao.commit()
     conexao.close()
-    print("Registro criado com sucesso")
+    # print("Registro criado com sucesso")
 
 
 def consultar_registros_tabela_marcas():
-    print("Consultando registros da tabela de marcas")
+    # print("Consultando registros da tabela de marcas")
     conexao = conectar()
     cursor = conexao.cursor()
     cursor = definir_banco_dados(cursor)
     cursor.execute("SELECT id, nome, endereco FROM marcas")
     registros = cursor.fetchall()
     conexao.close()
-    for registro in registros:
-        print(registro)
 
 
 def criar_tabela_clientes():
-    print("Criando tabela clientes")
+    # print("Criando tabela clientes")
     conexao = conectar()
     cursor = conexao.cursor()
     cursor = definir_banco_dados(cursor)
@@ -141,41 +215,39 @@ def criar_tabela_clientes():
                    """)
     conexao.commit()
     conexao.close()
-    print("Criado tabela clientes")
+    # print("Criado tabela clientes")
     
 
 
 def inserir_registro_tabela_clientes(nome: str, cpf: str):
-    print("Criando registro na tabela de clientes")
+    # print("Criando registro na tabela de clientes")
     conexao = conectar()
     cursor = conexao.cursor()
     cursor = definir_banco_dados(cursor)
     cursor.execute("INSERT INTO clientes (nome, cpf) VALUES (%s, %s)", (nome, cpf))
     conexao.commit()
     conexao.close()
-    print("Registro criado com sucesso")
+    # print("Registro criado com sucesso")
 
 
 def consultar_registros_tabela_clientes():
-    print("Consultando registros da tabela de clientes")
+    # print("Consultando registros da tabela de clientes")
     conexao = conectar()
     cursor = conexao.cursor()
     cursor = definir_banco_dados(cursor)
     cursor.execute("SELECT id, nome, cpf FROM clientes")
     registros = cursor.fetchall()
     conexao.close()
-    for registro in registros:
-        print(registro)
 
 
 def apagar_registro_tabela_categorias(id: int):
-    print("Apagando registro da tabela de categorias")
+    # print("Apagando registro da tabela de categorias")
     conexao = conectar()
     cursor = conexao.cursor()
     cursor = definir_banco_dados(cursor)
     cursor.execute("DELETE FROM categorias WHERE id = %s", (id,))
     conexao.commit()
     conexao.close()
-    print(f"Apagado registro da tabela de categorias com id = {id}")
+    # print(f"Apagado registro da tabela de categorias com id = {id}")
 
 # CRUD (Create, Read, Update, Delete)
