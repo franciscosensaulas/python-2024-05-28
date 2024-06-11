@@ -1,7 +1,8 @@
 import os
+from typing import Any, Dict, List, Optional
 import questionary
 
-from database_operacoes import alterar_registro_tabela_categorias, alterar_registro_tabela_marcas, apagar_registro_tabela_categorias, apagar_registro_tabela_marcas, consultar_registros_tabela_categorias, consultar_registros_tabela_clientes, consultar_registros_tabela_marcas, consultar_registros_tabela_produtos, inserir_registro_tabela_categorias, inserir_registro_tabela_clientes, inserir_registro_tabela_marcas, inserir_registro_tabela_produtos, setup
+from database_operacoes import alterar_registro_tabela_categorias, alterar_registro_tabela_marcas, alterar_registro_tabela_produtos, apagar_registro_tabela_categorias, apagar_registro_tabela_marcas, apagar_registro_tabela_produtos, consultar_registros_tabela_categorias, consultar_registros_tabela_clientes, consultar_registros_tabela_marcas, consultar_registros_tabela_produtos, inserir_registro_tabela_categorias, inserir_registro_tabela_clientes, inserir_registro_tabela_marcas, inserir_registro_tabela_produtos, setup
 from rich.table import Table
 from rich.console import Console
 
@@ -307,14 +308,34 @@ def listar_todos_produtos():
     console = Console()
     console.print(tabela)
 
-def cadastrar_produto():
+
+def obter_categorias_choices() -> List[questionary.Choice]:
     # obter a lista de categorias para permitir o usuário escolher a categoria 
     # que o produto será atrelado
     categorias = consultar_registros_tabela_categorias()
     categorias_choices = []
     for categoria in categorias:
         categorias_choices.append(questionary.Choice(categoria.get("nome"), categoria))
+    return categorias_choices
 
+
+def editar_produto():
+    produto_escolhido = escolher_produto()
+    if produto_escolhido is None:
+        return
+    categorias_choices = obter_categorias_choices()
+    produto_escolhido["nome"] = questionary.text(
+        "Digite o nome do produto: ", default=produto_escolhido.get("nome"),
+    ).ask().strip()
+    produto_escolhido["categoria"] = questionary.select(
+        "Escolha a categoria: ", categorias_choices, default=produto_escolhido.get("categoria"),
+    ).ask()
+    alterar_registro_tabela_produtos(produto_escolhido)
+    print("Produto alterado com sucesso")
+
+
+def cadastrar_produto():
+    categorias_choices = obter_categorias_choices()
     nome = questionary.text("Digite o nome do produto: ").ask().strip()
     categoria = questionary.select("Escolha a categoria: ", categorias_choices).ask()
 
@@ -322,14 +343,34 @@ def cadastrar_produto():
     print("Produto cadastrad com sucesso")
 
 
-def editar_produto():
-    pass
-
-
 def apagar_produto():
-    pass
+    produto_escolhido = escolher_produto()
+    if produto_escolhido is None:
+        return
+    confirmacao = questionary.confirm(f"Deseja realmente apagar '{produto_escolhido.get('nome')}'").ask()
+    if confirmacao == False:
+        return
+    apagar_registro_tabela_produtos(produto_escolhido.get("id"))
+    print("Produto apagado com sucesso")
 
 
+# def nomeFuncao(parametros) -> tipoRetorno
+def escolher_produto() -> Optional[Dict[str, Any]]:
+    produtos = consultar_registros_tabela_produtos()
+    if len(produtos) == 0:
+        print("Nenhum produto cadastrado")
+        return None
+
+    # choices = []
+    # for produto in produtos:
+    #     choices.append(questionary.Choice(produto.get("nome"), produto))
+    # list comprehension
+    choices = [questionary.Choice(produto.get("nome"), produto) 
+               for produto in produtos]
+    produto_escolhido = questionary.select("Escolha o produto", choices).ask()
+    return produto_escolhido
+
+    
 def menu_marca():
     opcao = 0
     opcoes = [    

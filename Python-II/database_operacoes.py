@@ -13,7 +13,7 @@ def conectar():
 
 
 def setup():
-    apagar_banco_dados()
+    # apagar_banco_dados()
     if verificar_banco_dados_existe() == False:
         criar_banco_dados()
         criar_tabelas()
@@ -294,7 +294,7 @@ def alterar_registro_tabela_marcas(id: int, endereco: str, nome: str):
     conexao.close()
 
 
-
+# def nomeFuncao(parametros) -> tipoRetorno
 def apagar_registro_tabela_marcas(id: int):
     conexao = conectar()
     cursor = conexao.cursor()
@@ -313,7 +313,7 @@ def criar_tabela_produtos():
             id INT PRIMARY KEY AUTO_INCREMENT,
             nome VARCHAR(100),
             id_categoria INT, -- FK referenciar uma pk de outra tabela
-            FOREIGN KEY (id_categoria) REFERENCES categorias(id) -- Chave estrangeira
+            FOREIGN KEY (id_categoria) REFERENCES categorias(id) -- Chave estrangeira   
         );""")
     conexao.commit()
     conexao.close()
@@ -362,3 +362,22 @@ def consultar_registros_tabela_produtos() -> List[Dict[str, Any]]:
         produtos.append(produto)
     return produtos
 
+
+def apagar_registro_tabela_produtos(id: int):
+    conexao = conectar()
+    cursor = conexao.cursor()
+    cursor = definir_banco_dados(cursor)
+    cursor.execute("DELETE FROM produtos WHERE id = %s", (id,))
+    conexao.commit()
+    conexao.close()
+
+def alterar_registro_tabela_produtos(produto: Dict[str, Any]):
+    conexao = conectar()
+    cursor = conexao.cursor()
+    cursor = definir_banco_dados(cursor)
+    cursor.execute(
+        "UPDATE produtos SET nome = %s, id_categoria = %s WHERE id = %s",
+        (produto.get("nome"), produto.get("categoria").get("id"), produto.get("id")),
+    )
+    conexao.commit()
+    conexao.close()
