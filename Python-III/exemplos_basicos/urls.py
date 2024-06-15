@@ -9,4 +9,10 @@ urlpatterns = [
     path("/contato", views.contato),
     path("/jogo", views.jogo),
     path("/calculadora", views.calculadora),
+    path("/calculadora/numero1/<int:numero1>", views.calculadora),
+    path("/calculadora/numero1/<int:numero1>/numero2/<int:numero2>", views.calculadora),
+    path("/calculadora-form", views.calculadora_form),
+    path("/calcular", views.calcular),
+    path("/carro", views.carro),
+    path("/carro-cadastrar", views.carro_cadastrar)
 ]
