@@ -33,10 +33,23 @@ def categoria_cadastrar(request):
     return redirect("categorias")
 
 
-def categoria_apagar(request):
-    pass
+# /categoria/apagar/<id>
+def categoria_apagar(request, id: int):
+    # Buscar a categoria que contém o id que veio na rota
+    categoria = models.Categoria.objects.get(pk=id)
+    # DELETE FROM categoria WHERE id = 2
+    # Executar o delete na tabela de categoria filtrando por id
+    categoria.delete()
+    # Redireciona para a tela de listagem de categorias
+    return redirect("categorias")
 
+# /categoria/editar/<id>
+def categoria_editar(request, id: int):
+    categoria = models.Categoria.objects.get(pk=id)
+    if request.method == "GET":
+        contexto = { "categoria": categoria}
+        return render(request, "categorias/editar.html", context=contexto)
 
-def categoria_editar(request):
-    pass
-
+    categoria.nome = request.POST.get("nome").strip()
+    categoria.save()
+    return redirect("categorias")

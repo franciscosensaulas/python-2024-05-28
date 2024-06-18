@@ -3,6 +3,7 @@ from . import views
 
 
 urlpatterns = [
+    path("/", views.home, name="interno_home"),
     path("/categoria", views.categoria_index, name="categorias"),
     path("/categoria/cadastrar", views.categoria_cadastrar),
     path("/categoria/apagar/<int:id>", views.categoria_apagar),
