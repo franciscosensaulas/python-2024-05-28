@@ -14,6 +14,12 @@ urlpatterns = [
     path("/categoria-form/apagar/<int:id>", views.categoria_form_apagar),
     path("/categoria-form/editar/<int:id>", views.categoria_form_editar),
 
+    
+    path("/produto", views.produto_index, name="produtos"),
+    path("/produto/cadastrar", views.produto_cadastrar),
+    path("/produto/apagar/<int:id>", views.produto_apagar),
+    path("/produto/editar/<int:id>", views.produto_editar),
+
 ]
 
 # Criar app
