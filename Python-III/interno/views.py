@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+
+from interno.forms import CategoriaForm
 from . import models
 
 
@@ -53,3 +55,69 @@ def categoria_editar(request, id: int):
     categoria.nome = request.POST.get("nome").strip()
     categoria.save()
     return redirect("categorias")
+
+
+# http://127.0.0.1:8000/interno/categoria-form
+def categoria_form_index(request):
+    # Consultar os registros da tabela de categorias (SELECT)
+    categorias = models.Categoria.objects.all()
+    contexto = {
+        "categorias": categorias
+    }
+    return render(
+        request, 
+        "categorias_forms/index.html", 
+        context=contexto,
+    )
+
+
+# http://127.0.0.1:8000/interno/categoria-form/cadastrar
+def categoria_form_cadastrar(request):
+    # Verificando se a request é do tipo POST
+    if request.method == "POST":
+        # construindo o form com os dados que o usuário preencheu
+        form = CategoriaForm(request.POST)
+        # valida se o dados preenhcidos que estão no form são válidos
+        if form.is_valid():
+            # Criar a categoria nesse caso
+            form.save()
+            # Redirecionar para a lista de categorias
+            return redirect("categorias_form")
+    # Caso da requisição do tipo GET
+    else:
+        # Criando o form vazio
+        form = CategoriaForm()
+    # criando o contexto passando o form
+    contexto = {"form": form}
+    # retornar o html do form
+    return render(request, "categorias_forms/cadastrar.html", context=contexto)
+
+
+def categoria_form_apagar(request, id: int):
+    # Buscar a categoria que contém o id que veio na rota
+    categoria = models.Categoria.objects.get(pk=id)
+    # DELETE FROM categoria WHERE id = 2
+    # Executar o delete na tabela de categoria filtrando por id
+    categoria.delete()
+    # Redireciona para a tela de listagem de categorias
+    return redirect("categorias_form")
+
+
+def categoria_form_editar(request, id: int):
+    categoria = models.Categoria.objects.get(pk=id)
+    if request.method == "POST":
+        form = CategoriaForm(request.POST, instance=categoria)
+        if form.is_valid():
+            form.save()
+            return redirect("categorias_form")
+    else:
+        form = CategoriaForm(instance=categoria)
+    contexto = {
+        "form": form,
+        "categoria": categoria,
+    }
+    return render(request, "categorias_forms/editar.html", contexto)
+# git status
+# git add .
+# git commit -m "Exemplo de form.Models em categorias-form"
+# git push origin main
