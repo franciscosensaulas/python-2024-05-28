@@ -1,0 +1,22 @@
+{{cidade.clima}}
+
+<select name="clima" id="clima" required>
+    <option>Selecione</option>
+    {% if cidade.clima == "Tropical" %}
+    <option value="Tropical" selected>Tropical</option>
+    {% else %}
+    <option value="Tropical">Tropical</option>
+    {% endif %}
+   
+    <option value="Equatorial" {% if cidade.clima == "Equatorial" %} selected {%endif%}>Equatorial</option>
+    <option value="Semiárido" {% if cidade.clima == "Semiárido" %} selected {%endif%}>Semiárido</option>
+    <option value="Tropical de Altitude" {% if cidade.clima == "Tropical de Altitude" %} selected {%endif%}>Tropical de Altitude</option>
+    <option value="Tropical Atlântico" {% if cidade.clima == "Tropical Atlântico" %} selected {%endif%}>Tropical Atlântico</option>
+</select>
+
+
+<select name="clima" id="clima" required>
+    {% for clima in climas %}
+    <option value="{{clima}}" {% if cidade.clima == clima %} selected {% endif %}>{{clima}}</option>
+    {% endfor %}
+</select>

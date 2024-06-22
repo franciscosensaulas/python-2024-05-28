@@ -25,7 +25,7 @@ def categoria_cadastrar(request):
     if request.method == "GET":
         return render(request, "categorias/cadastrar.html")
     # Obtendo os dados que o usuário preencheu nos campos
-    nome = request.POST.get("nome").strip()
+    nome = request.POST.get("nome").strip().capitalize()
     # instanciando um objeto da classe Categoria
     # preenchendo os atributos (nome)
     categoria = models.Categoria(nome=nome)
@@ -52,7 +52,7 @@ def categoria_editar(request, id: int):
         contexto = { "categoria": categoria}
         return render(request, "categorias/editar.html", context=contexto)
 
-    categoria.nome = request.POST.get("nome").strip()
+    categoria.nome = request.POST.get("nome").strip().capitalize()
     categoria.save()
     return redirect("categorias")
 
@@ -154,7 +154,7 @@ def produto_editar(request, id: int):
     produto = models.Produto.objects.get(pk=id)
 
     if request.method == "POST":
-        nome = request.POST.get("nome")
+        nome = request.POST.get("nome").capitalize()
         preco = request.POST.get("preco")
         id_categoria = request.POST.get("categoria")
         descricao = request.POST.get("descricao")
@@ -165,7 +165,7 @@ def produto_editar(request, id: int):
         produto.save()
         return redirect("produtos")
 
-    categorias = models.Categoria.objects.all()
+    categorias = models.Categoria.objects.order_by("nome").all()
     contexto = {
         "categorias": categorias,
         "produto": produto,
@@ -173,7 +173,21 @@ def produto_editar(request, id: int):
     return render(request, "produtos/editar.html", contexto)
 
 
+def rota(request):
+    cidade = {"clima": "Tropical de Altitude"}
+    climas = [
+        "Tropical",
+        "Equatorial",
+        "Semiárido",
+        "Tropical de Altitude",
+        "Tropical Atlântico",
+    ]
+
+    contexto = {"cidade": cidade, "climas": climas}
+    return render(request, "rota.html", context=contexto)
+
 # git status
 # git add .
 # git commit -m "Exemplo de form.Models em categorias-form"
 # git push origin main
+
