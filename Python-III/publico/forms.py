@@ -1,4 +1,5 @@
 from django import forms
+from publico.widgets import CustomFileInput, CustomSelect
 from . import models
 
 class ClienteCadastroForm(forms.ModelForm):
@@ -18,4 +19,19 @@ class ContatoCadastroForm(forms.ModelForm):
             "tipo": forms.Select(attrs={
                 "class": "select"
             })
+        }
+
+class ClienteEditarDetalheForm(forms.ModelForm):
+    class Meta:
+        model = models.Cliente
+        fields = ["nome", "rg", "genero", "foto_perfil"]
+        widgets = {
+            "nome": forms.TextInput(attrs={
+                "class": "input"
+            }),
+            "rg": forms.TextInput(attrs={
+                "class": "input"
+            }),
+            "genero": CustomSelect(attrs={"class": "seiLa"}),
+            "foto_perfil": CustomFileInput
         }

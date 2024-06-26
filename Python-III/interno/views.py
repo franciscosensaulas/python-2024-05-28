@@ -1,4 +1,6 @@
+from pathlib import Path
 from django.shortcuts import render, redirect
+from django.core.files.storage import FileSystemStorage
 
 from interno.forms import CategoriaForm
 from . import models
@@ -131,17 +133,31 @@ def produto_cadastrar(request):
         preco = request.POST.get("preco")
         id_categoria = request.POST.get("categoria")
         descricao = request.POST.get("descricao")
+        imagem = __upload_imagem(request)
         produto = models.Produto(
             nome=nome,
             preco=preco,
             descricao=descricao,
             categoria_id=id_categoria,
+            imagem=imagem,
         )
         produto.save()
         return redirect("produtos")
     categorias = models.Categoria.objects.all()
     contexto = {"categorias": categorias}
     return render(request, "produtos/cadastrar.html", contexto)
+
+
+def __upload_imagem(request):
+    if not request.FILES:
+        return None
+    imagem = request.FILES.get("imagem", None)
+    if not imagem:
+        return None 
+    salvador = FileSystemStorage()
+    caminho_arquivo = Path("produtos_imagens") / imagem.name
+    nome_arquivo = salvador.save(caminho_arquivo, imagem)
+    return nome_arquivo
 
 
 def produto_apagar(request, id: int):
@@ -171,20 +187,6 @@ def produto_editar(request, id: int):
         "produto": produto,
     }
     return render(request, "produtos/editar.html", contexto)
-
-
-def rota(request):
-    cidade = {"clima": "Tropical de Altitude"}
-    climas = [
-        "Tropical",
-        "Equatorial",
-        "Semiárido",
-        "Tropical de Altitude",
-        "Tropical Atlântico",
-    ]
-
-    contexto = {"cidade": cidade, "climas": climas}
-    return render(request, "rota.html", context=contexto)
 
 # git status
 # git add .
