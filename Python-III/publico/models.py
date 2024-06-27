@@ -1,21 +1,26 @@
 from enum import Enum
 from django.db import models
 
+
 class ContatoTipo(Enum):
     EMAIL = "E-mail"
     CELULAR = "Celular"
     INSTAGRAM = "Insta"
+
     @classmethod
     def choices(cls):
         return [(key.name, key.value) for key in cls]
-    
+
+
 class GeneroCliente(Enum):
     HOMEM = "Homem"
     MULHER = "Mulher"
     NAO_ESPECIFICADO = "Não especificado"
+
     @classmethod
     def choices(cls):
         return [(key.name, key.value) for key in cls]
+
 
 class Cliente(models.Model):
     nome = models.CharField(max_length=260, unique=True)
@@ -30,17 +35,22 @@ class Cliente(models.Model):
         # SELECT com INNER JOIN
         return self.contato_set.all()
 
+    def get_enderecos(self):
+        return self.endereco_set.all()
+
+
 class Contato(models.Model):
     tipo = models.CharField(choices=ContatoTipo.choices(), max_length=100)
     valor = models.CharField(max_length=200)
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 
+
 class Endereco(models.Model):
     uf = models.CharField(max_length=2)
-    cidade = models.CharField(max_length=100)       
+    cidade = models.CharField(max_length=100)
     bairro = models.CharField(max_length=100)
-    numero = models.CharField(max_length=50)        
+    numero = models.CharField(max_length=50)
     cep = models.CharField(max_length=10)
-    complemento = models.TextField()
+    rua = models.CharField(max_length=100, null=True)
+    complemento = models.TextField(null=True, blank=True)
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-
